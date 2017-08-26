@@ -48,7 +48,7 @@ public class SeriesFilterProcessorDecorator extends FilterProcessorDecorator {
 
   private String processNextSeries(String input) {
     final String REPLACEMENT_PATTERN = "\\[\\p{IsAlphabetic}+\\]";
-    final String REPLACEMENT = ".+";
+    final String REPLACEMENT = ".*";
     while (input.matches(SERIES_ALPHABETIC_PATTERN)) {
       input = input.replaceAll(REPLACEMENT_PATTERN, REPLACEMENT);
     }

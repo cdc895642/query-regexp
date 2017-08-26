@@ -25,6 +25,9 @@ public class RegexpQueryApplicationTests {
 		System.out.println(builder.toString());
 		System.out.println("\\p");
 		System.out.println(i.replaceFirst("\\[\\p{IsAlphabetic}+\\]",""));//
+		i="Vasiliev Vasiliy";
+		pattern="[ASV].*.*y";
+		System.out.println(!i.matches(pattern));
 	}
 
 }
