@@ -15,15 +15,14 @@ public class TrimFilterProcessorDecorator extends FilterProcessorDecorator {
   }
 
   /**
-   * Remove unnecessary letters from start and end of nameFilter and add BooleanExpression based on
-   * processed nameFilter
+   * Remove unnecessary letters from start and end of nameFilter
    *
-   * @return List of BooleanExpression that contains BooleanExpression based on processed nameFilter
+   * @return List of String that contains processed nameFilter
    */
-  public List<BooleanExpression> process() {
+  public List<String> process() {
     this.getFilterProcessor().process();
     trimPattern();
-    getExpressions().add(getByNotMatchNamePattern(getPattern()));
+    getExpressions().add(getPattern());
     return getExpressions();
   }
 

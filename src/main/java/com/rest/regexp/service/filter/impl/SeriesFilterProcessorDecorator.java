@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * Process nameFilter that contents regular expression like "[series of letters]"
+ * Process only first expression in pattern
  */
 public class SeriesFilterProcessorDecorator extends FilterProcessorDecorator {
 
@@ -17,22 +18,22 @@ public class SeriesFilterProcessorDecorator extends FilterProcessorDecorator {
   }
 
   /**
-   * Get List of BooleanExpression where column "name" from table "contacts" does not contain
-   * any letter from regular expression like "[series of letters]"
+   * Get List of strings expressions where each string does not contain
+   * any letter from regular expression like ".*[series of letters].*"
    *
-   * @return List of BooleanExpression where each of it formed by method {@link
+   * @return List of strings where each of it formed by method {@link
    * #getByNotMatchNamePattern(String)}
    */
-  public List<BooleanExpression> process() {
+  public List<String> process() {
     this.getFilterProcessor().process();
     if (getPattern().matches(SERIES_ALPHABETIC_PATTERN)) {
       getExpressions().clear();
-      addListBooleanExpression();
+      addListExpression();
     }
     return this.getExpressions();
   }
 
-  private void addListBooleanExpression() {
+  private void addListExpression() {
     int beginIndex = getPattern().indexOf("[") + 1;
     int endIndex = getPattern().indexOf("]");
     String series = getPattern().substring(beginIndex, endIndex);
@@ -41,7 +42,7 @@ public class SeriesFilterProcessorDecorator extends FilterProcessorDecorator {
       StringBuilder builder = new StringBuilder(getPattern());
       builder.replace(beginIndex - 1, endIndex + 1, "" + c);
       String result=processNextSeries(builder.toString());
-      this.getExpressions().add(getByNotMatchNamePattern(result));
+      this.getExpressions().add(result);
     }
   }
 

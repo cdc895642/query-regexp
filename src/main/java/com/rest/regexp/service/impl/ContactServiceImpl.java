@@ -3,6 +3,7 @@ package com.rest.regexp.service.impl;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.rest.regexp.dto.ContactList;
 import com.rest.regexp.model.Contact;
+import com.rest.regexp.model.QContact;
 import com.rest.regexp.repository.ContactRepository;
 import com.rest.regexp.service.ContactService;
 import com.rest.regexp.service.filter.FilterProcessor;
@@ -27,18 +28,25 @@ public class ContactServiceImpl implements ContactService {
   @Override
   public ContactList getContactsByNotMatchNamePattern(String pattern) {
     FilterProcessor filterProcessor = new FilterProcessorBase(pattern);
-    TrimFilterProcessorDecorator trimProcessor=new TrimFilterProcessorDecorator(filterProcessor);
+    TrimFilterProcessorDecorator trimProcessor = new TrimFilterProcessorDecorator(filterProcessor);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         trimProcessor);
-    List<BooleanExpression> listExpressions = seriesProcessor.process();
+    List<String> listStringExpressions = seriesProcessor.process();
+    List<BooleanExpression> listExpressions = listStringExpressions.stream()
+        .map(this::getByNotMatchNamePattern).collect(
+            Collectors.toList());
     List<Contact> contacts = contactRepository.findByNamePattern(listExpressions);
     return new ContactList() {{
-      setContacts(filterContacts(contacts,pattern));
+      setContacts(filterContacts(contacts, pattern));
     }};
   }
 
   private List<Contact> filterContacts(List<Contact> contacts, String pattern) {
     return contacts.stream().filter(c -> !c.getName().matches(pattern))
         .collect(Collectors.toList());
+  }
+
+  private BooleanExpression getByNotMatchNamePattern(String pattern) {
+    return QContact.contact.name.matches(pattern).not();
   }
 }

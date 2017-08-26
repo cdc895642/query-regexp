@@ -34,16 +34,12 @@ public class FilterProcessorDecorator implements FilterProcessor{
   }
 
   @Override
-  public List<BooleanExpression> getExpressions() {
+  public List<String> getExpressions() {
     return filterProcessor.getExpressions();
   }
 
   @Override
-  public List<BooleanExpression> process() {
+  public List<String> process() {
     return filterProcessor.process();
-  }
-
-  protected BooleanExpression getByNotMatchNamePattern(String pattern) {
-    return QContact.contact.name.matches(pattern).not();
   }
 }

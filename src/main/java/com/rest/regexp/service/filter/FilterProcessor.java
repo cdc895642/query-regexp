@@ -12,7 +12,7 @@ public interface FilterProcessor {
 
   public void setPattern(String pattern);
 
-  public List<BooleanExpression> getExpressions();
+  public List<String> getExpressions();
 
-  public List<BooleanExpression> process();
+  public List<String> process();
 }

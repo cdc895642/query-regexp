@@ -12,7 +12,7 @@ import java.util.List;
 public class FilterProcessorBase implements FilterProcessor {
 
   private String pattern;
-  private List<BooleanExpression> expressions;
+  private List<String> expressions;
 
   public FilterProcessorBase(String pattern) {
     this.pattern = pattern;
@@ -30,12 +30,12 @@ public class FilterProcessorBase implements FilterProcessor {
   }
 
   @Override
-  public List<BooleanExpression> getExpressions() {
+  public List<String> getExpressions() {
     return expressions;
   }
 
   @Override
-  public List<BooleanExpression> process() {
+  public List<String> process() {
     return expressions;
   }
 }
