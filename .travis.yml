@@ -1,0 +1,6 @@
+   - oraclejdk8
+  
+  sudo: required
+    
+ -script: mvn test
+ +script: mvn clean package
