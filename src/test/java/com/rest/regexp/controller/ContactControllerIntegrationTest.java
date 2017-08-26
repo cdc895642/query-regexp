@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.rest.regexp.service.ContactService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +33,12 @@ public class ContactControllerIntegrationTest {
 
   @Autowired
   private MockMvc mockMvc;
-  @Autowired
-  private ContactService contactService;
 
   @Sql("/data-test.sql")
   @Sql(scripts = "/clean-table-test.sql",
       executionPhase = AFTER_TEST_METHOD)
   @Test
-  public void getContactsByNameRegexp_correctUrlAndRequestParamAndMethod_returnContacts()
+  public void getContactsByNameRegexp_useFilterWithSeries_returnContacts()
       throws Exception {
     //Arrange
     final String FIRST_NAME = "Aaaa Bbbb";
@@ -59,6 +56,72 @@ public class ContactControllerIntegrationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
         .andExpect(jsonPath("$.contacts", hasSize(RESULT_CONTACTS_SIZE)))
         .andExpect(jsonPath("$.contacts[0].name").value(FIRST_NAME));
+  }
+
+  @Sql("/data-test.sql")
+  @Sql(scripts = "/clean-table-test.sql",
+      executionPhase = AFTER_TEST_METHOD)
+  @Test
+  public void getContactsByNameRegexp_useFilterWithLetter_returnContacts()
+      throws Exception {
+    //Arrange
+    final String FIRST_NAME = "Petrov Petr";
+    final int RESULT_CONTACTS_SIZE = 1;
+    final String TESTED_URL = "/hello/contacts?nameFilter=.*a.*";
+
+    //Act && Assert
+    MvcResult mvcResult = mockMvc.perform(get(TESTED_URL)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(request().asyncStarted())
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(mvcResult))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.contacts", hasSize(RESULT_CONTACTS_SIZE)))
+        .andExpect(jsonPath("$.contacts[0].name").value(FIRST_NAME));
+  }
+
+  @Sql("/data-test.sql")
+  @Sql(scripts = "/clean-table-test.sql",
+      executionPhase = AFTER_TEST_METHOD)
+  @Test
+  public void getContactsByNameRegexp_useFilterWithLetterAndSeries_returnContacts()
+      throws Exception {
+    //Arrange
+    final int RESULT_CONTACTS_SIZE = 4;
+    final String TESTED_URL = "/hello/contacts?nameFilter=A.*[btr]";
+
+    //Act && Assert
+    MvcResult mvcResult = mockMvc.perform(get(TESTED_URL)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(request().asyncStarted())
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(mvcResult))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.contacts", hasSize(RESULT_CONTACTS_SIZE)));
+  }
+
+  @Sql("/data-test.sql")
+  @Sql(scripts = "/clean-table-test.sql",
+      executionPhase = AFTER_TEST_METHOD)
+  @Test
+  public void getContactsByNameRegexp_useFilterWithIllegalCharacters_returnBadRequestStatus()
+      throws Exception {
+    //Arrange
+    final String TESTED_URL = "/hello/contacts?nameFilter=A.*([bt-r])";
+    final int EXPECTED_HTTP_STATUS = 400;
+
+    //Act && Assert
+    MvcResult mvcResult = mockMvc.perform(get(TESTED_URL)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(request().asyncStarted())
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(mvcResult))
+        .andExpect(status().is(EXPECTED_HTTP_STATUS));
   }
 
   @Test
