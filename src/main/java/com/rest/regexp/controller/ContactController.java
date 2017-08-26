@@ -4,6 +4,7 @@ import com.rest.regexp.dto.ContactList;
 import com.rest.regexp.service.ContactService;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +23,11 @@ public class ContactController {
 
   @GetMapping(value = "/hello/contacts", produces = "application/json")
   public DeferredResult<ContactList> getContactsByNameRegexp(
-      @RequestParam(name = "nameFilter") String nameFilter) {
+      @RequestParam(name = "nameFilter") String nameFilter)
+      throws MissingServletRequestParameterException {
+    if (nameFilter==null || nameFilter.isEmpty()){
+      throw new MissingServletRequestParameterException("nameFilter", "String");
+    }
     DeferredResult<ContactList> deferredResult = new DeferredResult<>();
     CompletableFuture a = CompletableFuture
         .supplyAsync(() -> contactService.getContactsByNotMatchNamePattern(nameFilter))
