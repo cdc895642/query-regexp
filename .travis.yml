@@ -2,6 +2,9 @@
 jdk:
   - oraclejdk8
 
-sudo: required
-  
+#sudo: required
+
+install:
+- mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
 script: mvn clean package
