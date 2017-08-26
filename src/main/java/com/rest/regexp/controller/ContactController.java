@@ -4,6 +4,7 @@ import com.rest.regexp.dto.ContactList;
 import com.rest.regexp.service.ContactService;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class ContactController {
     this.contactService = contactService;
   }
 
-  @PostMapping(value = "/hello/contacts", produces = "application/json")
+  @GetMapping(value = "/hello/contacts", produces = "application/json")
   public DeferredResult<ContactList> getContactsByNameRegexp(
       @RequestParam(name = "nameFilter") String nameFilter) {
     DeferredResult<ContactList> deferredResult = new DeferredResult<>();

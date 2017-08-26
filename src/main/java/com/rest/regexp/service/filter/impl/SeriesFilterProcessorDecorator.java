@@ -1,6 +1,5 @@
 package com.rest.regexp.service.filter.impl;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.rest.regexp.service.filter.FilterProcessor;
 import com.rest.regexp.service.filter.FilterProcessorDecorator;
 import java.util.List;
