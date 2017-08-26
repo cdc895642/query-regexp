@@ -21,8 +21,7 @@ public class SeriesFilterProcessorDecorator extends FilterProcessorDecorator {
    * Get List of strings expressions where each string does not contain
    * any letter from regular expression like ".*[series of letters].*"
    *
-   * @return List of strings where each of it formed by method {@link
-   * #getByNotMatchNamePattern(String)}
+   * @return List of strings where each of it represent separate condition for query to database
    */
   public List<String> process() {
     this.getFilterProcessor().process();
@@ -41,17 +40,8 @@ public class SeriesFilterProcessorDecorator extends FilterProcessorDecorator {
     for (char c : chars) {
       StringBuilder builder = new StringBuilder(getPattern());
       builder.replace(beginIndex - 1, endIndex + 1, "" + c);
-      String result=processNextSeries(builder.toString());
+      String result=builder.toString();
       this.getExpressions().add(result);
     }
-  }
-
-  private String processNextSeries(String input) {
-    final String REPLACEMENT_PATTERN = "\\[\\p{IsAlphabetic}+\\]";
-    final String REPLACEMENT = ".*";
-    while (input.matches(SERIES_ALPHABETIC_PATTERN)) {
-      input = input.replaceAll(REPLACEMENT_PATTERN, REPLACEMENT);
-    }
-    return input;
   }
 }

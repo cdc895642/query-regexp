@@ -37,13 +37,8 @@ public class ContactServiceImpl implements ContactService {
             Collectors.toList());
     List<Contact> contacts = contactRepository.findByNamePattern(listExpressions);
     return new ContactList() {{
-      setContacts(filterContacts(contacts, pattern));
+      setContacts(contacts);
     }};
-  }
-
-  private List<Contact> filterContacts(List<Contact> contacts, String pattern) {
-    return contacts.stream().filter(c -> !c.getName().matches(pattern))
-        .collect(Collectors.toList());
   }
 
   private BooleanExpression getByNotMatchNamePattern(String pattern) {
