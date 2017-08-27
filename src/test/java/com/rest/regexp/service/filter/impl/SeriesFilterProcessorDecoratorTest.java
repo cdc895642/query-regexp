@@ -12,42 +12,6 @@ import org.junit.Test;
 public class SeriesFilterProcessorDecoratorTest {
 
   @Test
-  public void process_useBeforeTrimFilterProcessor_removeFirstElementFormList() {
-    //Arrange
-    final String PATTERN = "^abc[df]gh$";
-    final List<String> EXPECTED = Arrays.asList("abcdgh", "abcfgh");
-    FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
-    SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
-        filterProcessor);
-    TrimFilterProcessorDecorator trimProcessor = new TrimFilterProcessorDecorator(
-        seriesProcessor);
-
-    //Act
-    List<String> result = trimProcessor.process();
-
-    //Assert
-    assertEquals(EXPECTED, result);
-  }
-
-  @Test
-  public void process_useAfterTrimFilterProcessor_removeFirstElementFormList() {
-    //Arrange
-    final String PATTERN = "^abc[df]gh$";
-    final List<String> EXPECTED = Arrays.asList("abcdgh", "abcfgh");
-    FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
-    TrimFilterProcessorDecorator trimFilterProcessorDecorator = new TrimFilterProcessorDecorator(
-        filterProcessor);
-    SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
-        trimFilterProcessorDecorator);
-
-    //Act
-    List<String> result = seriesProcessor.process();
-
-    //Assert
-    assertEquals(EXPECTED, result);
-  }
-
-  @Test
   public void process_addSeriesNotEmptyListExpression_removeFirstElementFormList() {
     //Arrange
     final String PATTERN = "abc[df]gh";
