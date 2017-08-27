@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
@@ -66,5 +67,70 @@ public class ContactControllerTest {
     verify(contactService, times(EXPECTED_NUMBER_OF_INVOCATION))
         .getContactsByNotMatchNamePattern(anyString());
     verifyNoMoreInteractions(contactService);
+  }
+
+  @Test
+  public void getContactsByNameRegexp_correctAllAndEmptyRequestParam_returnBadRequestStatus()
+      throws Exception {
+    //Arrange
+    final String TESTED_URL = "/hello/contacts?nameFilter";
+    final int EXPECTED_HTTP_STATUS = 400;
+
+    //Act && Assert
+    mockMvc.perform(get(TESTED_URL)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is(EXPECTED_HTTP_STATUS));
+  }
+
+  @Test
+  public void getContactsByNameRegexp_WithoutRequestParam_returnBadRequestStatus()
+      throws Exception {
+    //Arrange
+    final String TESTED_URL = "/hello/contacts";
+    final int EXPECTED_HTTP_STATUS = 400;
+
+    //Act && Assert
+    mockMvc.perform(get(TESTED_URL)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is(EXPECTED_HTTP_STATUS));
+  }
+
+  @Test
+  public void getContactsByNameRegexp_correctUrlAndRequestParamAndNotCorrectMethod_returnMethodNotAllowedStatus()
+      throws Exception {
+    //Arrange
+    final String TESTED_URL = "/hello/contacts?nameFilter=filter";
+    final int EXPECTED_HTTP_STATUS = 405;
+
+    //Act && Assert
+    mockMvc.perform(post(TESTED_URL)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is(EXPECTED_HTTP_STATUS));
+  }
+
+  @Test
+  public void getContactsByNameRegexp_correctUrlAndMethodAndNotCorrectRequestParam_returnBadRequestStatus()
+      throws Exception {
+    //Arrange
+    final String TESTED_URL = "/hello/contacts?contactFilter=filter";
+    final int EXPECTED_HTTP_STATUS = 400;
+
+    //Act && Assert
+    mockMvc.perform(get(TESTED_URL)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is(EXPECTED_HTTP_STATUS));
+  }
+
+  @Test
+  public void getContactsByNameRegexp_notCorrectUrl_returnNotFoundStatus()
+      throws Exception {
+    //Arrange
+    final String TESTED_URL = "/hello/wrong-contacts?contactFilter=filter";
+    final int EXPECTED_HTTP_STATUS = 404;
+
+    //Act && Assert
+    mockMvc.perform(get(TESTED_URL)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is(EXPECTED_HTTP_STATUS));
   }
 }
