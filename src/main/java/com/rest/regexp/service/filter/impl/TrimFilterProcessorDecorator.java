@@ -1,9 +1,9 @@
 package com.rest.regexp.service.filter.impl;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.rest.regexp.service.filter.FilterProcessor;
 import com.rest.regexp.service.filter.FilterProcessorDecorator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Remove unnecessary letters from start and end of nameFilter
@@ -15,25 +15,33 @@ public class TrimFilterProcessorDecorator extends FilterProcessorDecorator {
   }
 
   /**
-   * Remove unnecessary letters from start and end of nameFilter
+   * Remove unnecessary letters from start and end of nameFilter.
    *
    * @return List of String that contains processed nameFilter
    */
   public List<String> process() {
     this.getFilterProcessor().process();
-    trimPattern();
-    getExpressions().add(getPattern());
+    if (getExpressions().size() == 0) {
+      String newPattern = trimPattern(getPattern());
+      setPattern(newPattern);
+      getExpressions().add(newPattern);
+    } else {
+      List<String> editedList = getExpressions().stream().map(this::trimPattern)
+          .collect(Collectors.toList());
+      getExpressions().clear();
+      getExpressions().addAll(editedList);
+    }
     return getExpressions();
   }
 
-  private void trimPattern() {
-    StringBuilder stringBuilder = new StringBuilder(getPattern());
-    if (getPattern().startsWith("^")) {
+  private String trimPattern(String pattern) {
+    StringBuilder stringBuilder = new StringBuilder(pattern);
+    if (pattern.startsWith("^")) {
       stringBuilder.replace(0, 1, "");
     }
-    if (getPattern().endsWith("$")) {
+    if (pattern.endsWith("$")) {
       stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");
     }
-    setPattern(stringBuilder.toString());
+    return stringBuilder.toString();
   }
 }
