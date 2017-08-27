@@ -38,6 +38,30 @@ public class ContactControllerIntegrationTest {
   @Sql(scripts = "/clean-table-test.sql",
       executionPhase = AFTER_TEST_METHOD)
   @Test
+  public void getContactsByNameRegexp_useFilterWithSeriesAndStartEndSymbols_returnContacts()
+      throws Exception {
+    //Arrange
+    final String FIRST_NAME = "Aaaa Bbbb";
+    final int RESULT_CONTACTS_SIZE = 1;
+    final String TESTED_URL = "/hello/contacts?nameFilter=^[SVPI].*$";
+
+    //Act && Assert
+    MvcResult mvcResult = mockMvc.perform(get(TESTED_URL)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(request().asyncStarted())
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(mvcResult))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        .andExpect(jsonPath("$.contacts", hasSize(RESULT_CONTACTS_SIZE)))
+        .andExpect(jsonPath("$.contacts[0].name").value(FIRST_NAME));
+  }
+
+  @Sql("/data-test.sql")
+  @Sql(scripts = "/clean-table-test.sql",
+      executionPhase = AFTER_TEST_METHOD)
+  @Test
   public void getContactsByNameRegexp_useFilterWithSeries_returnContacts()
       throws Exception {
     //Arrange

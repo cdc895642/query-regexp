@@ -12,17 +12,53 @@ import org.junit.Test;
 public class SeriesFilterProcessorDecoratorTest {
 
   @Test
-  public void process_addSeriesNotEmptyListExpression_removeFirstElementFormList(){
+  public void process_useBeforeTrimFilterProcessor_removeFirstElementFormList() {
     //Arrange
-    final String PATTERN="abc[df]gh";
-    final List<String> EXPECTED= Arrays.asList("abcdgh","abcfgh");
+    final String PATTERN = "^abc[df]gh$";
+    final List<String> EXPECTED = Arrays.asList("abcdgh", "abcfgh");
+    FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
+    SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
+        filterProcessor);
+    TrimFilterProcessorDecorator trimProcessor = new TrimFilterProcessorDecorator(
+        seriesProcessor);
+
+    //Act
+    List<String> result = trimProcessor.process();
+
+    //Assert
+    assertEquals(EXPECTED, result);
+  }
+
+  @Test
+  public void process_useAfterTrimFilterProcessor_removeFirstElementFormList() {
+    //Arrange
+    final String PATTERN = "^abc[df]gh$";
+    final List<String> EXPECTED = Arrays.asList("abcdgh", "abcfgh");
+    FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
+    TrimFilterProcessorDecorator trimFilterProcessorDecorator = new TrimFilterProcessorDecorator(
+        filterProcessor);
+    SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
+        trimFilterProcessorDecorator);
+
+    //Act
+    List<String> result = seriesProcessor.process();
+
+    //Assert
+    assertEquals(EXPECTED, result);
+  }
+
+  @Test
+  public void process_addSeriesNotEmptyListExpression_removeFirstElementFormList() {
+    //Arrange
+    final String PATTERN = "abc[df]gh";
+    final List<String> EXPECTED = Arrays.asList("abcdgh", "abcfgh");
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     filterProcessor.getExpressions().add("first");
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -31,14 +67,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addInnerSeriesWithLetters_returnEmptyList() {
     //Arrange
-    final String PATTERN="[abc[df]gh]";
-    final List<String> EXPECTED= new ArrayList<>();
+    final String PATTERN = "[abc[df]gh]";
+    final List<String> EXPECTED = new ArrayList<>();
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -47,14 +83,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addInnerSeriesWithNoLetters_returnEmptyList() {
     //Arrange
-    final String PATTERN="[abc[d-f]gh]";
-    final List<String> EXPECTED= new ArrayList<>();
+    final String PATTERN = "[abc[d-f]gh]";
+    final List<String> EXPECTED = new ArrayList<>();
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -63,14 +99,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addTwoSeries_processOnlyFirstOne() {
     //Arrange
-    final String PATTERN="[ac]middle[de]";
-    final List<String> EXPECTED= Arrays.asList("amiddle[de]","cmiddle[de]");
+    final String PATTERN = "[ac]middle[de]";
+    final List<String> EXPECTED = Arrays.asList("amiddle[de]", "cmiddle[de]");
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -79,14 +115,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addSeriesWithNoLetters_returnEmptyList() {
     //Arrange
-    final String PATTERN="[a-c]end";
-    final List<String> EXPECTED= new ArrayList<>();
+    final String PATTERN = "[a-c]end";
+    final List<String> EXPECTED = new ArrayList<>();
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -95,14 +131,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addSeriesFirstWithNoLettersSecondWithLetters_returnEmptyList() {
     //Arrange
-    final String PATTERN="[a-c]middle[de]";
-    final List<String> EXPECTED= new ArrayList<>();
+    final String PATTERN = "[a-c]middle[de]";
+    final List<String> EXPECTED = new ArrayList<>();
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -111,14 +147,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addOneSeriesWithFewLettersInBeginPattern_returnListWithFewElements() {
     //Arrange
-    final String PATTERN="[abc]end";
-    final List<String> EXPECTED= Arrays.asList("aend","bend","cend");
+    final String PATTERN = "[abc]end";
+    final List<String> EXPECTED = Arrays.asList("aend", "bend", "cend");
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -127,14 +163,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addOneSeriesWithOneLetterInBeginPattern_returnListWithOneElement() {
     //Arrange
-    final String PATTERN="[a]end";
-    final List<String> EXPECTED= Arrays.asList("aend");
+    final String PATTERN = "[a]end";
+    final List<String> EXPECTED = Arrays.asList("aend");
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -143,14 +179,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addOneSeriesWithFewLettersInMiddlePattern_returnListWithFewElements() {
     //Arrange
-    final String PATTERN=".*[abc]end";
-    final List<String> EXPECTED= Arrays.asList(".*aend",".*bend",".*cend");
+    final String PATTERN = ".*[abc]end";
+    final List<String> EXPECTED = Arrays.asList(".*aend", ".*bend", ".*cend");
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -159,14 +195,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addOneSeriesWithOneLetterInMiddlePattern_returnListWithOneElement() {
     //Arrange
-    final String PATTERN=".*[a]end";
-    final List<String> EXPECTED= Arrays.asList(".*aend");
+    final String PATTERN = ".*[a]end";
+    final List<String> EXPECTED = Arrays.asList(".*aend");
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -175,14 +211,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addOneSeriesWithFewLettersInEndPattern_returnListWithFewElements() {
     //Arrange
-    final String PATTERN=".*[abc]";
-    final List<String> EXPECTED= Arrays.asList(".*a",".*b",".*c");
+    final String PATTERN = ".*[abc]";
+    final List<String> EXPECTED = Arrays.asList(".*a", ".*b", ".*c");
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
@@ -191,14 +227,14 @@ public class SeriesFilterProcessorDecoratorTest {
   @Test
   public void process_addOneSeriesWithOneLetterInEndPattern_returnListWithOneElement() {
     //Arrange
-    final String PATTERN=".*[a]";
-    final List<String> EXPECTED= Arrays.asList(".*a");
+    final String PATTERN = ".*[a]";
+    final List<String> EXPECTED = Arrays.asList(".*a");
     FilterProcessor filterProcessor = new FilterProcessorBase(PATTERN);
     SeriesFilterProcessorDecorator seriesProcessor = new SeriesFilterProcessorDecorator(
         filterProcessor);
 
     //Act
-    List<String> result=seriesProcessor.process();
+    List<String> result = seriesProcessor.process();
 
     //Assert
     assertEquals(EXPECTED, result);
