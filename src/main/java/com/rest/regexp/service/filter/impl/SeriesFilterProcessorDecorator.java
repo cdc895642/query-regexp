@@ -11,6 +11,7 @@ import java.util.List;
 public class SeriesFilterProcessorDecorator extends FilterProcessorDecorator {
 
   private final String SERIES_ALPHABETIC_PATTERN = ".*\\[\\p{IsAlphabetic}+\\].*";
+  private final String CORRECT_SERIES_PATTERN = "\\p{IsAlphabetic}+";
 
   public SeriesFilterProcessorDecorator(FilterProcessor filterProcessor) {
     super(filterProcessor);
@@ -35,6 +36,9 @@ public class SeriesFilterProcessorDecorator extends FilterProcessorDecorator {
     int beginIndex = getPattern().indexOf("[") + 1;
     int endIndex = getPattern().indexOf("]");
     String series = getPattern().substring(beginIndex, endIndex);
+    if (!checkCorrectSeries(series)){
+      return;
+    }
     char[] chars = series.toCharArray();
     for (char c : chars) {
       StringBuilder builder = new StringBuilder(getPattern());
@@ -42,5 +46,9 @@ public class SeriesFilterProcessorDecorator extends FilterProcessorDecorator {
       String result=builder.toString();
       this.getExpressions().add(result);
     }
+  }
+
+  private boolean checkCorrectSeries(String series){
+    return series.matches(CORRECT_SERIES_PATTERN);
   }
 }
